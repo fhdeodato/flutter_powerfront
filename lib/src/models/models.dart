@@ -1,0 +1,1 @@
+export 'inside_init_configuration.dart';

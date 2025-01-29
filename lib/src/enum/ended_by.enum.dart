@@ -1,0 +1,4 @@
+enum InsideEndedBy {
+  visitor,
+  operator
+}
