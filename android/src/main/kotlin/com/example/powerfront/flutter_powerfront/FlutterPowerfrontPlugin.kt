@@ -12,7 +12,6 @@ import android.app.Activity
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
-// Importe as classes do INSIDE SDK (os nomes podem variar conforme o pacote real)
 import com.powerfront.insidewebsdkandroid.interfaces.InsideChatInterface
 import com.powerfront.insidewebsdkandroid.InsideClient
 
@@ -89,7 +88,7 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         activity?.let { act ->
             insideClient = InsideClient.getInstance(act)
             insideClient.setChatInterface(this)
-            // O método initialize deve ser chamado conforme o manual de integração
+            // call according integration manual
             insideClient.initialize(act, websiteUrl, accountKey, serverUrl, appName, subsiteId)
         }
     }
@@ -110,7 +109,7 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
       channel.invokeMethod("onError", arguments)
     }
 
-    // Implementação dos callbacks do INSIDEChatInterface para notificar o Flutter
+    //calback implementations
     override fun onConnected() {
         channel.invokeMethod("onConnected", null)
     }
@@ -145,10 +144,6 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         channel.invokeMethod("requirePermission", status)
     }
 
-    // override fun canAppHandleUrl(url: String): Boolean {
-    //     return channel.invokeMethod("canAppHandleUrl", url)
-    // }
-
     override fun canAppHandleUrl(url: String): Boolean {
       var resultValue = false
       val latch = java.util.concurrent.CountDownLatch(1)
@@ -166,7 +161,7 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
               latch.countDown()
           }
       })
-      latch.await() // Aguarda a resposta. Cuidado: isso bloqueia a thread.
+      latch.await()
       return resultValue
     }
 
