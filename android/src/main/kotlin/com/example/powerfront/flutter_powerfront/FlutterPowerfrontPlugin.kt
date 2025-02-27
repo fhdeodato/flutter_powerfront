@@ -13,6 +13,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
 import com.powerfront.insidewebsdkandroid.interfaces.InsideChatInterface
+import com.powerfront.insidewebsdkandroid.models
 import com.powerfront.insidewebsdkandroid.InsideClient
 
 /** FlutterPowerfrontPlugin */
@@ -70,6 +71,14 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 result.success(null)
             }
             "setView" -> {
+                val type = call.argument<InsideViewType>("type") ?: InsideViewType.OTHER
+                val name = call.argument<String>("name") ?: ""
+                val category = call.argument<String>("category") ?: ""
+                val image = call.argument<String>("image") ?: ""
+                val price = call.argument<Int>("price") ?: 0
+                val sku= call.argument<String>("sku") ?: ""
+                val customHasMap= call.argument<HashMap<String!, Any!>>("customHashMap") ?: {} 
+                val customStringArray= call.argument<Array<String>>("customStringArray") ?: arrayOf<String>()
                 insideClient.setView()
                 result.success(null)
             }
