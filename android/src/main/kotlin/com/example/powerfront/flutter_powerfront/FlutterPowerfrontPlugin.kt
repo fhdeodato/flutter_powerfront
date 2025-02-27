@@ -69,6 +69,10 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 insideClient.detachChatPane()
                 result.success(null)
             }
+            "setView" -> {
+                insideClient.setView()
+                result.success(null)
+            }
             // "setFcmToken" -> {
             //     val token = call.argument<String>("token") ?: ""
             //     insideClient.setFcmToken(token)
