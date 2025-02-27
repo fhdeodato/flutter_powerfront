@@ -1,6 +1,7 @@
 package com.example.powerfront.flutter_powerfront
 
 import androidx.annotation.NonNull
+import java.math.BigDecimal
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -13,7 +14,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
 import com.powerfront.insidewebsdkandroid.interfaces.InsideChatInterface
-import com.powerfront.insidewebsdkandroid.models
+import com.powerfront.insidewebsdkandroid.models.InsideViewType
 import com.powerfront.insidewebsdkandroid.InsideClient
 
 /** FlutterPowerfrontPlugin */
@@ -71,15 +72,17 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 result.success(null)
             }
             "setView" -> {
-                val type = call.argument<InsideViewType>("type") ?: InsideViewType.OTHER
+                val type = call.argument<InsideViewType>("type") ?: InsideViewType.Other
                 val name = call.argument<String>("name") ?: ""
                 val category = call.argument<String>("category") ?: ""
                 val image = call.argument<String>("image") ?: ""
-                val price = call.argument<Int>("price") ?: 0
+                val price = call.argument<BigDecimal>("price") ?: BigDecimal.ZERO
                 val sku= call.argument<String>("sku") ?: ""
-                val customHasMap= call.argument<HashMap<String!, Any!>>("customHashMap") ?: {} 
-                val customStringArray= call.argument<Array<String>>("customStringArray") ?: arrayOf<String>()
-                insideClient.setView()
+                //TODO: what is this parameter? 
+                val sku2= call.argument<String>("sku2") ?: ""
+                val customHashMap= call.argument<HashMap<String, Any>>("customHashMap") ?: hashMapOf<String, Any>("key" to "value")
+                val customStringArray= call.argument<Array<String>>("customStringArray") ?: arrayOf<String>("String")
+                insideClient.setView(type, name, category, image, price, sku,sku2, customHashMap, customStringArray )
                 result.success(null)
             }
             // "setFcmToken" -> {
