@@ -67,6 +67,10 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 attachChatPane(top, bottom)
                 result.success(null)
             }
+            "push" -> {
+                insideClient.push()
+                result.success(null)
+            }
             "detachChatPane" -> {
                 insideClient.detachChatPane()
                 result.success(null)
