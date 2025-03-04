@@ -89,6 +89,13 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 insideClient.setView(type, name, category, image, price, sku,sku2, customHashMap, customStringArray )
                 result.success(null)
             }
+            "setUser" -> {
+                val emailId = call.argument<String>("userId") ?: ""
+                val name = call.argument<String>("name") ?: ""
+                val customHashMap= call.argument<HashMap<String, String>>("customHashMap") ?: hashMapOf<String, String>("key" to "value")
+                insideClient.setUser(emailId, name, customHashMap)
+                result.success(null)
+            }
             // "setFcmToken" -> {
             //     val token = call.argument<String>("token") ?: ""
             //     insideClient.setFcmToken(token)
