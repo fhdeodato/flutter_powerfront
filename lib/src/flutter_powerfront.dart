@@ -10,6 +10,10 @@ class FlutterPowerfront {
     await FlutterPowerfrontPlatform.instance.init(config);
   }
 
+  Future<void> dismiss() async {
+    await FlutterPowerfrontPlatform.instance.dismiss();
+  }
+
   Future<bool?> setView() async {
     return FlutterPowerfrontPlatform.instance.setView();
   }

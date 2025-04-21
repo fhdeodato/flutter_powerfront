@@ -43,6 +43,10 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
     case "getUnreadMessagesCount":
       print("getUnreadMessagesCount method was called")
       getUnreadMessagesCount()
+    case "dismiss":
+      print("dismiss method was called")
+      viewController?.dismiss(animated: true, completion: nil)
+      result(true)
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -200,12 +204,15 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
   }
   
   public func onLinkTapped(url: URL?) -> Bool {
-    let arguments: [String: Any?] = [
-      "url": url,
+    let arguments: [String: String?] = [
+      "url": url?.absoluteString
     ]
 
-    // Envia para o Flutter
-    self.channel?.invokeMethod("onLinkTapped", arguments: arguments)
+    // Send to Flutter and wait for result
+    self.channel?.invokeMethod("onLinkTapped", arguments: arguments, result: { (result) in
+      // Handle result if needed
+    })
+      
     return true
   }
   //  ----------------------------------------------------

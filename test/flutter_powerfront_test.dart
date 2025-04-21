@@ -15,6 +15,12 @@ class MockFlutterPowerfrontPlatform
     // TODO: implement init
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool?> dismiss() {
+    // TODO: implement init
+    throw UnimplementedError();
+  }
   
   @override
   Future<bool?> push() {
