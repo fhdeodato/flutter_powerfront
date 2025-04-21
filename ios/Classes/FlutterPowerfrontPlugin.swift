@@ -7,23 +7,18 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
   private var client: InsideClient?
   private var viewController: UIViewController?
   private var channel: FlutterMethodChannel?
+  // Add a static instance to maintain a strong reference
+  private static var instance: FlutterPowerfrontPlugin?
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "flutter_powerfront", binaryMessenger: registrar.messenger())
-    let instance = FlutterPowerfrontPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
+    instance = FlutterPowerfrontPlugin()
+    registrar.addMethodCallDelegate(instance!, channel: channel)
       
-    instance.channel = channel
-
-    // save the main controller
-    if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
-      if let navController = rootViewController as? UINavigationController {
-        instance.viewController = navController
-      } else {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        instance.viewController = navigationController
-        UIApplication.shared.delegate?.window??.rootViewController = navigationController
-      }
+    instance!.channel = channel
+ 
+    if let controller = UIApplication.shared.delegate?.window??.rootViewController as? FlutterViewController {
+        instance!.viewController = controller
     }
   }
 
@@ -47,7 +42,7 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       powerfrontPresentView()
     case "getUnreadMessagesCount":
       print("getUnreadMessagesCount method was called")
-      powerfrontPresentView()
+      getUnreadMessagesCount()
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -63,12 +58,13 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       return
     }
 
-    guard let navController = viewController?.navigationController else {
-      print("Error: NavigationController is nil")
-      return
+    // Find the nearest navigation controller in the view hierarchy
+    if let navigationController = viewController?.navigationController ?? viewController as? UINavigationController {
+        navigationController.pushViewController(chatViewController, animated: true)
+    } else {
+        // Fallback to present modally if no navigation controller is available
+        viewController?.present(chatViewController, animated: true, completion: nil)
     }
-
-    navController.pushViewController(chatViewController, animated: true)
   }
 
   // this one is working fine, the Push View not so much
@@ -78,7 +74,7 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       return
     }
 
-    viewController?.present(chatViewController, animated: true, completion: nil)
+      viewController?.present(chatViewController, animated: true, completion: nil)
   }
 
 

@@ -81,10 +81,10 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               onPressed: () {
                 InsideInitConfiguration initConfig = InsideInitConfiguration(
-                  domainURL: '',
-                  accountKey: '', //'IN-XXXYYYW',
-                  appName: '',
-                  mobileSiteURL: '',
+                  domainURL: 'https://us-sandbox-live.inside-graph.com/',
+                  accountKey: 'IN-1001179', //'IN-XXXYYYW',
+                  appName: 'APPNAME',
+                  mobileSiteURL: 'https://www.fashionphile.us/',
                 );
 
                 _flutterPowerfrontPlugin.init(initConfig);
