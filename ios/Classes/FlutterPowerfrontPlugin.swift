@@ -42,7 +42,7 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       powerfrontPresentView()
     case "getUnreadMessagesCount":
       print("getUnreadMessagesCount method was called")
-      getUnreadMessagesCount()
+      getUnreadMessagesCount(result: result)
     case "dismiss":
       print("dismiss method was called")
       viewController?.dismiss(animated: true, completion: nil)
@@ -53,7 +53,14 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
   }
 
   //getUnreadMessagesCount
-  func getUnreadMessagesCount(){}
+  func getUnreadMessagesCount(result: @escaping FlutterResult){
+      let unreadMessagesCount = client?.unreadMessagesCount
+      if let count = unreadMessagesCount {
+          result(Int(count))
+      } else {
+          result(0)
+      }
+  }
   
   // consider the use of powerfrontPresentView instead this one (at least for now)
   func powerfrontPushView() {
