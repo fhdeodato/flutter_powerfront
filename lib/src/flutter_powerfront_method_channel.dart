@@ -89,6 +89,15 @@ class MethodChannelFlutterPowerfront extends FlutterPowerfrontPlatform {
   // MARK: setView
   // -----------------------------------------------------
   @override
+  Future<bool?> disconnect() async {
+    final result = await methodChannel.invokeMethod<bool>('disconnect');
+    return result;
+  }
+
+  // -----------------------------------------------------
+  // MARK: setView
+  // -----------------------------------------------------
+  @override
   Future<bool?> setView() async {
     final version = await methodChannel.invokeMethod<bool>('  ');
     return version;
