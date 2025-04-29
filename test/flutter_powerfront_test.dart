@@ -175,6 +175,12 @@ class MockFlutterPowerfrontPlatform
     // TODO: implement getUnreadMessagesCount
     throw UnimplementedError();
   }
+  
+  @override
+  Future<void> disconnect() {
+    // TODO: implement disconnect
+    throw UnimplementedError();
+  }
 }
 
 void main() {

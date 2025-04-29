@@ -47,6 +47,10 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       print("dismiss method was called")
       viewController?.dismiss(animated: true, completion: nil)
       result(true)
+    case "disconnect":
+      print("disconnect method was called")
+      client?.disconnect()
+      result(true)
     default:
       result(FlutterMethodNotImplemented)
     }

@@ -35,6 +35,10 @@ abstract class FlutterPowerfrontPlatform extends PlatformInterface {
     throw UnimplementedError('dismiss() has not been implemented.');
   }
 
+  Future<void> disconnect() {
+    throw UnimplementedError('disconnect() has not been implemented.');
+  }
+
   Future<bool?> setView() {
     throw UnimplementedError('setView() has not been implemented.');
   }
