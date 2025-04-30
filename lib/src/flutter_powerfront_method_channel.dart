@@ -46,8 +46,7 @@ class MethodChannelFlutterPowerfront extends FlutterPowerfrontPlatform {
           _handleOnChatMinimise(call);
           break;
         case "onChatClose":
-          _handleOnChatClose(call);
-          break;
+          return _handleOnChatClose(call);
         case "onDisconnected":
           _handleOnDisconnected(call);
           break;
@@ -240,6 +239,8 @@ class MethodChannelFlutterPowerfront extends FlutterPowerfrontPlatform {
     if (onChatClose == null) return;
 
     onChatClose!();
+
+    return;
   }
 
   // -----------------------------------------------------

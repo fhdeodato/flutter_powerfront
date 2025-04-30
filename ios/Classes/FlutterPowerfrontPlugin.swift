@@ -105,6 +105,14 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       result(FlutterError.invalidParams)
       return
     }
+      
+    if let chatVC = client?.chatViewController {
+        chatVC.willMove(toParent: nil)
+        chatVC.view.removeFromSuperview()
+        chatVC.removeFromParent()
+    }
+      
+    client = nil
 
     if let domainURL = params["domainURL"] as? String,
        let accountKey = params["accountKey"] as? String,
@@ -120,8 +128,9 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
             subsiteId: subsiteId
         )
 
-        if let client = client {
-            client.delegate = self
+        if let localClient = client {
+            localClient.delegate = self
+            client = localClient
             result(true)
         } else {
             result(FlutterError(code: "Initialization Error", message: "Failed to initialize InsideClient", details: nil))
@@ -181,12 +190,19 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
   }
   
   public func onChatClose() {
-    self.channel?.invokeMethod("onChatClose", arguments: nil);
-
-    // close the chat
-    self.viewController?.dismiss(animated: true, completion: nil)
+    channel?.invokeMethod("onChatClose", arguments: nil) { result in
+      // If the Flutter returns an error, it will come as FlutterError
+      if let error = result as? FlutterError {
+          print("Error calling onChatClose on Flutter: \(error.code) – \(error.message ?? "")")
+      }
+      // Now that the method has been invoked (successfully or not), close the view on the main thread
+      DispatchQueue.main.async {
+          self.viewController?.dismiss(animated: true, completion: nil)
+      }
+    }
   }
-  
+
+    
   public func onChatMinimise() {
     self.channel?.invokeMethod("onChatMinimise", arguments: nil);
   }
