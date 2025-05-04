@@ -1,6 +1,7 @@
 package com.example.powerfront.flutter_powerfront
 
 import androidx.annotation.NonNull
+import java.math.BigDecimal
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -13,6 +14,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
 import com.powerfront.insidewebsdkandroid.interfaces.InsideChatInterface
+import com.powerfront.insidewebsdkandroid.models.InsideViewType
 import com.powerfront.insidewebsdkandroid.InsideClient
 
 /** FlutterPowerfrontPlugin */
@@ -65,8 +67,33 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 attachChatPane(top, bottom)
                 result.success(null)
             }
+            "push" -> {
+                insideClient.push()
+                result.success(null)
+            }
             "detachChatPane" -> {
                 insideClient.detachChatPane()
+                result.success(null)
+            }
+            "setView" -> {
+                val type = call.argument<InsideViewType>("type") ?: InsideViewType.Other
+                val name = call.argument<String>("name") ?: ""
+                val category = call.argument<String>("category") ?: ""
+                val image = call.argument<String>("image") ?: ""
+                val price = call.argument<BigDecimal>("price") ?: BigDecimal.ZERO
+                val sku= call.argument<String>("sku") ?: ""
+                //TODO: what is this parameter? 
+                val sku2= call.argument<String>("sku2") ?: ""
+                val customHashMap= call.argument<HashMap<String, Any>>("customHashMap") ?: hashMapOf<String, Any>("key" to "value")
+                val customStringArray= call.argument<Array<String>>("customStringArray") ?: arrayOf<String>("String")
+                insideClient.setView(type, name, category, image, price, sku,sku2, customHashMap, customStringArray )
+                result.success(null)
+            }
+            "setUser" -> {
+                val emailId = call.argument<String>("userId") ?: ""
+                val name = call.argument<String>("name") ?: ""
+                val customHashMap= call.argument<HashMap<String, String>>("customHashMap") ?: hashMapOf<String, String>("key" to "value")
+                insideClient.setUser(emailId, name, customHashMap)
                 result.success(null)
             }
             // "setFcmToken" -> {

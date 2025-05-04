@@ -40,6 +40,9 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
     case "presentView":
       print("presentView method was called")
       powerfrontPresentView()
+    case "setUser":
+      print("presentView method was called")
+      powerfrontSetUser(call: call, result: result)
     case "getUnreadMessagesCount":
       print("getUnreadMessagesCount method was called")
       getUnreadMessagesCount(result: result)
@@ -90,6 +93,22 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
     }
 
       viewController?.present(chatViewController, animated: true, completion: nil)
+  }
+
+  func powerfrontSetUser(call: FlutterMethodCall, result: @escaping FlutterResult) {
+
+    guard let params = call.arguments as? NSDictionary else {
+      result(FlutterError.invalidParams)
+      return
+    }
+
+    if let userId = params["userId"] as? String,
+       let name = params["name"] as? String{
+        client.setUser(userId:userId, name:name)
+        }else {
+        result(FlutterError.invalidParams("Missing or invalid parameters"))
+    }
+
   }
 
 

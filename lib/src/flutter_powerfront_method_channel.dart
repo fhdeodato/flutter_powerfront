@@ -98,7 +98,7 @@ class MethodChannelFlutterPowerfront extends FlutterPowerfrontPlatform {
   // -----------------------------------------------------
   @override
   Future<bool?> setView() async {
-    final version = await methodChannel.invokeMethod<bool>('  ');
+    final version = await methodChannel.invokeMethod<bool>('setView');
     return version;
   }
 
