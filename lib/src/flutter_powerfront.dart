@@ -37,11 +37,13 @@ class FlutterPowerfront {
   /// they are used as a top and bottom margin of the activity
   /// the sdk request to both be set, so you may need to add 1 for bottom to not impact your design.
   Future<void> pushView({int top = 0, int bottom = 0}) async {
-    return FlutterPowerfrontPlatform.instance.pushView(top: top, bottom: bottom);
+    return FlutterPowerfrontPlatform.instance
+        .pushView(top: top, bottom: bottom);
   }
 
   Future<void> presentView({int top = 0, int bottom = 0}) async {
-    return FlutterPowerfrontPlatform.instance.presentView(top: top, bottom: bottom);
+    return FlutterPowerfrontPlatform.instance
+        .presentView(top: top, bottom: bottom);
   }
 
   /// CALL THIS ONLY AFTER INIT
@@ -74,6 +76,10 @@ class FlutterPowerfront {
     return FlutterPowerfrontPlatform.instance.setOnChatAvailable(callback);
   }
 
+  Future<void> onChatVisible(VoidCallback callback) async {
+    return FlutterPowerfrontPlatform.instance.setOnChatVisible(callback);
+  }
+
   Future<void> onChatMessage(ChatMessageCallback callback) async {
     return FlutterPowerfrontPlatform.instance.setOnChatMessage(callback);
   }
@@ -93,7 +99,6 @@ class FlutterPowerfront {
   Future<void> onViewProductDetails(ViewProductDetailsCallback callback) async {
     return FlutterPowerfrontPlatform.instance.setOnViewProductDetails(callback);
   }
-
 
   Future<int> getUnreadMessagesCount() async {
     return FlutterPowerfrontPlatform.instance.getUnreadMessagesCount();

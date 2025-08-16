@@ -174,6 +174,40 @@ abstract class FlutterPowerfrontPlatform extends PlatformInterface {
     throw UnimplementedError('setOnChatAvailable() has not been implemented.');
   }
 
+  /// Triggered when the chat is visible.
+  ///
+  /// This method registers a callback that is invoked when the chat is visible
+  /// 
+  /// from the documentation
+  /// 
+  /// The method will be called when chatpane is loaded properly into the view default loader 
+  /// disappears as soon as this method gets called and you can wait until the view is available 
+  /// and to hide custom loader once this method is invoked 
+  ///
+  /// ### Parameters:
+  /// - [callback]: A function of type [VoidCallback] that is executed 
+  ///   when the chat is visible.
+  ///
+  /// ### Example:
+  /// ```dart
+  /// await setOnChatVisible(() {
+  ///   print("Chat is now visible");
+  /// });
+  /// ```
+  ///
+  /// ### Note:
+  /// This function must be implemented in the native code or plugin. By default, 
+  /// it throws an [UnimplementedError].
+  ///
+  /// ### Errors:
+  /// - Throws an [UnimplementedError] if the function is not implemented.
+  ///
+  /// ### Returns:
+  /// - void.
+  void setOnChatVisible(VoidCallback callback) {
+    throw UnimplementedError('setOnChatVisible() has not been implemented.');
+  }
+
   /// Registers a callback that is invoked when a chat message is received while the chat pane is closed.
   ///
   /// This method allows you to provide a callback function that will be executed

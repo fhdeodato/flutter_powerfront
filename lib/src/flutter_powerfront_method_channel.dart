@@ -23,6 +23,7 @@ class MethodChannelFlutterPowerfront extends FlutterPowerfrontPlatform {
   VoidCallback? onDisconnected;
   VoidCallback? onChatMinimise;
   VoidCallback? onChatClose;
+  VoidCallback? onChatVisible;
 
   /// Powerfront
 
@@ -67,6 +68,9 @@ class MethodChannelFlutterPowerfront extends FlutterPowerfrontPlatform {
           break;
         case "onViewProductDetails":
           _handleOnViewProductDetails(call);
+          break;
+        case "onChatVisible":
+          _handleOnChatVisible(call);
           break;
       }
     });
@@ -309,6 +313,25 @@ class MethodChannelFlutterPowerfront extends FlutterPowerfrontPlatform {
       debugLog("Error in onChatAvailable: $e");
       debugLog(stackTrace.toString());
     }
+  }
+
+    // -----------------------------------------------------
+  // MARK: onChatVisible
+  // -----------------------------------------------------
+  @override
+  void setOnChatVisible(VoidCallback callback) {
+    onChatVisible = callback;
+  }
+
+  Future<void> _handleOnChatVisible(MethodCall call) async {
+    // validation for the current method
+    if (call.method != "onChatVisible") return;
+
+    // if not callback defined, ignore the call
+    if (onChatVisible == null) return;
+
+    // calling the callback
+    onChatVisible!();
   }
 
   // -----------------------------------------------------

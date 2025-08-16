@@ -296,8 +296,10 @@ class FlutterPowerfrontPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     override fun canAppHandleUrl(url: String): Boolean {
         var resultValue = false
         val latch = java.util.concurrent.CountDownLatch(1)
+
+        val map = hashMapOf("url" to url)
         activity?.runOnUiThread {
-            channel.invokeMethod("onLinkTapped", url, object : MethodChannel.Result {
+            channel.invokeMethod("onLinkTapped", map, object : MethodChannel.Result {
                 override fun success(result: Any?) {
                     if (result is Boolean) {
                         resultValue = result
