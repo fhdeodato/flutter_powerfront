@@ -1,0 +1,2 @@
+/Users/fddeodato/Documents/code/flutter_powerfront/example/android/app/.cxx/RelWithDebInfo/3y4l7248/x86_64/CMakeFiles/edit_cache.dir
+/Users/fddeodato/Documents/code/flutter_powerfront/example/android/app/.cxx/RelWithDebInfo/3y4l7248/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+/Users/fddeodato/Documents/code/flutter_powerfront/example/build/app/intermediates/cxx/RelWithDebInfo/3y4l7248/obj/arm64-v8a
