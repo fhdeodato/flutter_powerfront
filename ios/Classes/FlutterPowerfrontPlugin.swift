@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import InsideMobileiOS
+import WebKit
 
 public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDelegate {
 
@@ -89,6 +90,12 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       return
     }
 
+    chatViewController.view.backgroundColor = .white
+
+    if let webView = chatViewController.view.subviews.first(where: { $0 is WKWebView }) {
+        webView.backgroundColor = .white
+        (webView as? WKWebView)?.isOpaque = false
+    }
       viewController?.present(chatViewController, animated: true, completion: nil)
   }
 
