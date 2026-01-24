@@ -66,39 +66,147 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
           result(0)
       }
   }
+
+  private func findWKWebView(in view: UIView) -> WKWebView? {
+      if let wv = view as? WKWebView { return wv }
+      for sub in view.subviews {
+          if let found = findWKWebView(in: sub) { return found }
+      }
+      return nil
+  }
+
+ private func forceInsideIframeFullscreenReliable(in chatVC: UIViewController) {
+
+     let js = """
+     (function () {
+       function apply() {
+         var iframe = document.getElementById('insideChatFrame');
+         if (!iframe) return false;
+
+         iframe.style.position = 'fixed';
+         iframe.style.top = '0';
+         iframe.style.left = '0';
+         iframe.style.right = '0';
+         iframe.style.bottom = '0';
+         iframe.style.width = '100vw';
+         iframe.style.height = '100vh';
+         iframe.style.maxWidth = '100%';
+         iframe.style.maxHeight = '100%';
+         iframe.style.borderRadius = '0';
+         iframe.style.boxShadow = 'none';
+         iframe.style.margin = '0';
+         iframe.style.zIndex = '2147483647';
+
+         var holder = document.getElementById('inside_holder');
+         if (holder) {
+           holder.style.position = 'fixed';
+           holder.style.top = '0';
+           holder.style.left = '0';
+           holder.style.right = '0';
+           holder.style.bottom = '0';
+           holder.style.width = '100vw';
+           holder.style.height = '100vh';
+           holder.style.margin = '0';
+         }
+
+         var overlay = document.getElementById('inside_overlay');
+         if (overlay) {
+           overlay.style.position = 'fixed';
+           overlay.style.top = '0';
+           overlay.style.left = '0';
+           overlay.style.right = '0';
+           overlay.style.bottom = '0';
+           overlay.style.width = '100vw';
+           overlay.style.height = '100vh';
+         }
+
+         if (!window.__insideFullscreenObserver) {
+           window.__insideFullscreenObserver = new MutationObserver(function(){ apply(); });
+           window.__insideFullscreenObserver.observe(document.documentElement, { childList:true, subtree:true, attributes:true });
+         }
+         return true;
+       }
+       return apply();
+     })();
+     """
+
+     let start = Date()
+
+     func tick() {
+         guard let webView = self.findWKWebView(in: chatVC.view) else {
+             if Date().timeIntervalSince(start) < 20.0 {
+                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { tick() }
+             } else {
+                 print("WKWebView not found within timeout ⏱️")
+             }
+             return
+         }
+         webView.evaluateJavaScript(js) { result, error in
+             let ok = (result as? Bool) == true
+             if ok {
+                 print("Applied fullscreen iframe styles ✅")
+                 return
+             }
+
+             if Date().timeIntervalSince(start) < 20.0 {
+                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { tick() }
+             } else {
+                 if let error = error {
+                     print("Iframe not found within timeout ⏱️. Last JS error: \(error)")
+                 } else {
+                     print("Iframe not found within timeout ⏱️")
+                 }
+             }
+         }
+     }
+
+     DispatchQueue.main.async { tick() }
+ }
+
+
   
   // consider the use of powerfrontPresentView instead this one (at least for now)
-  func powerfrontPushView() {
+func powerfrontPushView() {
     guard let chatViewController = client?.chatViewController else {
-      print("Error: chatViewController is nil")
-      return
+        print("Error: chatViewController is nil")
+        return
     }
+  chatViewController.view.backgroundColor = .white
+    if let navigationController =
+        viewController?.navigationController ??
+        (viewController as? UINavigationController) {
 
-    // Find the nearest navigation controller in the view hierarchy
-    if let navigationController = viewController?.navigationController ?? viewController as? UINavigationController {
         navigationController.pushViewController(chatViewController, animated: true)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.forceInsideIframeFullscreenReliable(in: chatViewController)
+        }
+
     } else {
-        // Fallback to present modally if no navigation controller is available
-        viewController?.present(chatViewController, animated: true, completion: nil)
+        viewController?.present(chatViewController, animated: true) { [weak self] in
+            guard let self else { return }
+            self.forceInsideIframeFullscreenReliable(in: chatViewController)
+        }
     }
+}
+  private var isIPad: Bool {
+    UIDevice.current.userInterfaceIdiom == .pad
   }
 
-  // this one is working fine, the Push View not so much
-  func powerfrontPresentView() {
-    guard let chatViewController = client?.chatViewController else {
-      print("Error: chatViewController is nil")
-      return
-    }
-
-    chatViewController.view.backgroundColor = .white
-
-    if let webView = chatViewController.view.subviews.first(where: { $0 is WKWebView }) {
-        webView.backgroundColor = .white
-        (webView as? WKWebView)?.isOpaque = false
-    }
-      viewController?.present(chatViewController, animated: true, completion: nil)
+func powerfrontPresentView() {
+  guard let chatViewController = client?.chatViewController else {
+    print("Error: chatViewController is nil")
+    return
   }
+  chatViewController.view.backgroundColor = .white
 
+viewController?.present(chatViewController, animated: true, completion: { [weak self] in
+  guard let self else { return }
+  self.forceInsideIframeFullscreenReliable(in: chatViewController)
+})
+
+}
 
   func powerfrontPush(result: @escaping FlutterResult){
     client?.push()
