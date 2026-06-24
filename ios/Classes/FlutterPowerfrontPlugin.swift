@@ -15,12 +15,44 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
     let channel = FlutterMethodChannel(name: "flutter_powerfront", binaryMessenger: registrar.messenger())
     instance = FlutterPowerfrontPlugin()
     registrar.addMethodCallDelegate(instance!, channel: channel)
-      
+
     instance!.channel = channel
- 
-    if let controller = UIApplication.shared.delegate?.window??.rootViewController as? FlutterViewController {
-        instance!.viewController = controller
+    instance!.viewController = registrar.viewController
+  }
+
+  private func resolvePresentingViewController() -> UIViewController? {
+    if let viewController {
+      return topMostViewController(from: viewController)
     }
+
+    let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+    let keyWindow = scenes
+      .flatMap { $0.windows }
+      .first { $0.isKeyWindow }
+    if let root = keyWindow?.rootViewController {
+      return topMostViewController(from: root)
+    }
+
+    return scenes
+      .flatMap { $0.windows }
+      .first?
+      .rootViewController
+      .map { topMostViewController(from: $0) }
+  }
+
+  private func topMostViewController(from root: UIViewController) -> UIViewController {
+    if let presented = root.presentedViewController {
+      return topMostViewController(from: presented)
+    }
+    if let navigationController = root as? UINavigationController,
+       let visible = navigationController.visibleViewController {
+      return topMostViewController(from: visible)
+    }
+    if let tabBarController = root as? UITabBarController,
+       let selected = tabBarController.selectedViewController {
+      return topMostViewController(from: selected)
+    }
+    return root
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -46,7 +78,7 @@ public class FlutterPowerfrontPlugin: NSObject, FlutterPlugin, InsideClientDeleg
       getUnreadMessagesCount(result: result)
     case "dismiss":
       print("dismiss method was called")
-      viewController?.dismiss(animated: true, completion: nil)
+      dismissChatPresentation()
       result(true)
     case "disconnect":
       print("disconnect method was called")
@@ -171,10 +203,17 @@ func powerfrontPushView() {
         print("Error: chatViewController is nil")
         return
     }
-  chatViewController.view.backgroundColor = .white
+    chatViewController.view.backgroundColor = .white
+    chatViewController.modalPresentationStyle = .fullScreen
+
+    guard let presenter = resolvePresentingViewController() else {
+        print("Error: presenting view controller is nil")
+        return
+    }
+
     if let navigationController =
-        viewController?.navigationController ??
-        (viewController as? UINavigationController) {
+        presenter.navigationController ??
+        (presenter as? UINavigationController) {
 
         navigationController.pushViewController(chatViewController, animated: true)
 
@@ -184,7 +223,7 @@ func powerfrontPushView() {
         }
 
     } else {
-        viewController?.present(chatViewController, animated: true) { [weak self] in
+        presenter.present(chatViewController, animated: true) { [weak self] in
             guard let self else { return }
             self.forceInsideIframeFullscreenReliable(in: chatViewController)
         }
@@ -199,14 +238,35 @@ func powerfrontPresentView() {
     print("Error: chatViewController is nil")
     return
   }
+
+  guard let presenter = resolvePresentingViewController() else {
+    print("Error: presenting view controller is nil")
+    return
+  }
+
   chatViewController.view.backgroundColor = .white
+  chatViewController.modalPresentationStyle = .fullScreen
 
-viewController?.present(chatViewController, animated: true, completion: { [weak self] in
-  guard let self else { return }
-  self.forceInsideIframeFullscreenReliable(in: chatViewController)
-})
+  if chatViewController.presentingViewController != nil {
+    forceInsideIframeFullscreenReliable(in: chatViewController)
+    return
+  }
 
+  presenter.present(chatViewController, animated: true) { [weak self] in
+    guard let self else { return }
+    self.forceInsideIframeFullscreenReliable(in: chatViewController)
+  }
 }
+
+  private func dismissChatPresentation() {
+    if let chatViewController = client?.chatViewController,
+       chatViewController.presentingViewController != nil {
+      chatViewController.dismiss(animated: true, completion: nil)
+      return
+    }
+
+    resolvePresentingViewController()?.dismiss(animated: true, completion: nil)
+  }
 
   func powerfrontPush(result: @escaping FlutterResult){
     client?.push()
@@ -312,7 +372,7 @@ viewController?.present(chatViewController, animated: true, completion: { [weak 
       }
       // Now that the method has been invoked (successfully or not), close the view on the main thread
       DispatchQueue.main.async {
-          self.viewController?.dismiss(animated: true, completion: nil)
+          self.dismissChatPresentation()
       }
     }
   }
